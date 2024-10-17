@@ -1,10 +1,12 @@
 #include <QApplication>
+#include <QSqlDatabase>
 #include <QVBoxLayout>
-#include <QTextStream>
-#include <QMessageBox>
+//#include <QTextStream>
+//#include <QMessageBox>
+#include <QSqlError>
 #include <QWidget>
-#include <QLabel>
-#include <QFile>
+//#include <QLabel>
+//#include <QFile>
 
 
 class DBManager : public QWidget{
@@ -26,6 +28,22 @@ int main(int argc, char *argv[]) {
     w.setWindowTitle("MM");
     w.resize(1000, 700);
     w.show();
+
+
+    // проверка psql
+    // параметры подключения
+    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+    db.setHostName("localhost");
+    db.setPort(5432);
+    // подключаемся к системной базе
+    db.setDatabaseName("postgres");
+    db.setUserName("MM_user");
+    db.setPassword("U4Xmg3");
+
+    // проверяем подключение
+    if (!db.open()) {
+        qDebug() << "Ошибка подключения: " << db.lastError().text();
+    }
 
 
     return app.exec();
