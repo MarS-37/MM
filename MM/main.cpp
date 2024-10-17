@@ -1,50 +1,61 @@
 #include <QApplication>
-#include <QSqlDatabase>
+#include <QMessageBox>
+#include <QMainWindow>
+#include <QTableView>
 #include <QVBoxLayout>
-//#include <QTextStream>
-//#include <QMessageBox>
-#include <QSqlError>
-#include <QWidget>
-//#include <QLabel>
-//#include <QFile>
+#include <QSqlTableModel>
+#include "dbmanager.h"
 
-
-class DBManager : public QWidget{
-    Q_OBJECT
-
-public:
-    DBManager(QWidget *parent = nullptr) : QWidget(parent)
-    {
-
-    }
-};
-
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QApplication app(argc, argv);
 
+    DBManager dbManager;
 
-    QWidget w;
-    w.setWindowTitle("MM");
-    w.resize(1000, 700);
-    w.show();
-
-
-    // проверка psql
-    // параметры подключения
-    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-    db.setHostName("localhost");
-    db.setPort(5432);
-    // подключаемся к системной базе
-    db.setDatabaseName("postgres");
-    db.setUserName("MM_user");
-    db.setPassword("U4Xmg3");
-
-    // проверяем подключение
-    if (!db.open()) {
-        qDebug() << "Ошибка подключения: " << db.lastError().text();
+    // Проверка подключения к серверу
+    if (!dbManager.isServerAvailable()) {
+        QMessageBox::critical(nullptr, "Ошибка", "Не найден сервер PostgreSQL");
+        return 0;
     }
 
+    // Проверка или создание базы данных
+    if (!dbManager.FindDatabase()) {
+        dbManager.CreateDatabase();
+    }
+
+    // Проверка или создание таблицы
+    if (!dbManager.FindTable()) {
+        dbManager.CreateTable();
+    }
+
+    // Создаем главное окно приложения
+    QMainWindow mainWindow;
+    mainWindow.setWindowTitle("Рабочая база 'mm'");
+    mainWindow.resize(800, 600);
+
+    // Создаем виджет для отображения таблицы
+    QWidget *centralWidget = new QWidget(&mainWindow);
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+
+    // Создаем компонент QTableView для отображения таблицы
+    QTableView *tableView = new QTableView(centralWidget);
+
+    // Подключаем таблицу из базы данных к модели
+    QSqlTableModel *model = new QSqlTableModel(&mainWindow);
+    model->setTable("settings");
+    model->select(); // Загружаем данные
+
+    // Настраиваем таблицу для отображения
+    tableView->setModel(model);
+    tableView->resizeColumnsToContents();
+
+    // Добавляем таблицу в основной макет
+    layout->addWidget(tableView);
+    centralWidget->setLayout(layout);
+
+    // Устанавливаем центральный виджет в главное окно
+    mainWindow.setCentralWidget(centralWidget);
+    mainWindow.show();
 
     return app.exec();
 }
