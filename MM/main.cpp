@@ -1,10 +1,12 @@
+#include "constants.hpp"
+#include "dbmanager.h"
+#include <QSqlTableModel>
 #include <QApplication>
 #include <QMessageBox>
 #include <QMainWindow>
-#include <QTableView>
 #include <QVBoxLayout>
-#include <QSqlTableModel>
-#include "dbmanager.h"
+#include <QTableView>
+
 
 int main(int argc, char *argv[])
 {
@@ -12,50 +14,52 @@ int main(int argc, char *argv[])
 
     DBManager dbManager;
 
-    // Проверка подключения к серверу
-    if (!dbManager.isServerAvailable()) {
+    // проверка подключения к серверу
+    if (!dbManager.ServerAvailable()) {
         QMessageBox::critical(nullptr, "Ошибка", "Не найден сервер PostgreSQL");
+
         return 0;
     }
 
-    // Проверка или создание базы данных
+    // проверка или создание базы данных
     if (!dbManager.FindDatabase()) {
         dbManager.CreateDatabase();
     }
 
-    // Проверка или создание таблицы
+    // проверка или создание таблицы
     if (!dbManager.FindTable()) {
         dbManager.CreateTable();
     }
 
-    // Создаем главное окно приложения
+    // создаем главное окно приложения
     QMainWindow mainWindow;
-    mainWindow.setWindowTitle("Рабочая база 'mm'");
+    mainWindow.setWindowTitle("Рабочая база '" + DB_NAME() + "'");
     mainWindow.resize(800, 600);
 
-    // Создаем виджет для отображения таблицы
+    // создаем виджет для отображения таблицы
     QWidget *centralWidget = new QWidget(&mainWindow);
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    // Создаем компонент QTableView для отображения таблицы
+    // создаем компонент QTableView для отображения таблицы
     QTableView *tableView = new QTableView(centralWidget);
 
-    // Подключаем таблицу из базы данных к модели
+    // подключаем таблицу из базы данных к модели
     QSqlTableModel *model = new QSqlTableModel(&mainWindow);
-    model->setTable("settings");
-    model->select(); // Загружаем данные
+    model->setTable(TABLE_NAME());
+    model->select(); // загружаем данные
 
-    // Настраиваем таблицу для отображения
+    // настраиваем таблицу для отображения
     tableView->setModel(model);
     tableView->resizeColumnsToContents();
 
-    // Добавляем таблицу в основной макет
+    // добавляем таблицу в основной макет
     layout->addWidget(tableView);
     centralWidget->setLayout(layout);
 
-    // Устанавливаем центральный виджет в главное окно
+    // устанавливаем центральный виджет в главное окно
     mainWindow.setCentralWidget(centralWidget);
     mainWindow.show();
+
 
     return app.exec();
 }
