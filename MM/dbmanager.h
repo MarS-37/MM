@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QObject>
 
+
 class DBManager : public QObject
 {
     Q_OBJECT
@@ -20,5 +21,6 @@ public:
 private:
     QSqlDatabase db;
 };
+
 
 #endif // DBMANAGER_H

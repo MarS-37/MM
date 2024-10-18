@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     // создаем главное окно приложения
     QMainWindow mainWindow;
     mainWindow.setWindowTitle("Рабочая база '" + DB_NAME() + "'");
-    mainWindow.resize(800, 600);
+    mainWindow.resize(1200, 800);
 
     // создаем виджет для отображения таблицы
     QWidget *centralWidget = new QWidget(&mainWindow);

@@ -18,6 +18,7 @@ bool DBManager::ServerAvailable()
 {
     // проверяем соединение с сервером
     db.setDatabaseName("postgres");
+
     if (!db.open()) {
         qDebug() << "Ошибка подключения к серверу PostgreSQL: " << db.lastError().text();
 
@@ -30,6 +31,7 @@ bool DBManager::ServerAvailable()
 bool DBManager::FindDatabase()
 {
     QSqlQuery query;
+
     query.prepare("SELECT 1 FROM pg_database WHERE datname = :dbname");
     query.bindValue(":dbname", DB_NAME());
 
@@ -38,6 +40,7 @@ bool DBManager::FindDatabase()
 
         return true;
     }
+
     qDebug() << "База данных не найдена.";
 
     return false;
@@ -46,6 +49,7 @@ bool DBManager::FindDatabase()
 void DBManager::CreateDatabase()
 {
     QSqlQuery query;
+
     if (query.exec("CREATE DATABASE " + DB_NAME())) {
         qDebug() << "База данных" << DB_NAME() << "создана.";
     } else {
@@ -57,6 +61,7 @@ bool DBManager::FindTable()
 {
     // подключаемся к БД
     db.setDatabaseName(DB_NAME());
+
     if (!db.open()) {
         qDebug() << "Ошибка подключения к базе данных: " << db.lastError().text();
 
@@ -64,6 +69,7 @@ bool DBManager::FindTable()
     }
 
     QSqlQuery query;
+
     query.prepare("SELECT 1 FROM information_schema.tables WHERE table_name = :tablename");
     query.bindValue(":tablename", TABLE_NAME());
 
@@ -72,7 +78,9 @@ bool DBManager::FindTable()
 
         return true;
     }
+
     qDebug() << "Таблица" << TABLE_NAME() << " не найдена.";
+
 
     return false;
 }
