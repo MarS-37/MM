@@ -26,10 +26,9 @@ int main(int argc, char *argv[])
         dbManager.CreateDatabase();
     }
 
-    // проверка или создание таблицы
-    if (!dbManager.FindTable()) {
-        dbManager.CreateTable();
-    }
+    // проверка наличия таблиц и создание их, если они отсутствуют
+    dbManager.EnsureTablesExist();
+    dbManager.AddRecords(TABLE_NAME(0), 200);
 
     // создаем главное окно приложения
     QMainWindow mainWindow;
@@ -45,7 +44,7 @@ int main(int argc, char *argv[])
 
     // подключаем таблицу из базы данных к модели
     QSqlTableModel *model = new QSqlTableModel(&mainWindow);
-    model->setTable(TABLE_NAME());
+    model->setTable(TABLE_NAME(0)); // "questions"
     model->select(); // загружаем данные
 
     // настраиваем таблицу для отображения

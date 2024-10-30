@@ -14,13 +14,16 @@ public:
     bool ServerAvailable();
     bool FindDatabase();
     void CreateDatabase();
-    bool FindTable();
-    void CreateTable();
-    void TablePrint();
+    bool FindTable(const QString &tableName);
+    void CreateTable(const QString &tableName);
+    void EnsureTablesExist();
+    void TablePrint(const QString &tableName);
+
+    // метод для добавления записей
+    void AddRecords(const QString &tableName, int count);
 
 private:
     QSqlDatabase db;
 };
-
 
 #endif // DBMANAGER_H
