@@ -57,7 +57,8 @@ bool DBManager::FindDatabase()
 
 void DBManager::CreateDatabase()
 {
-    // подключаемся к серверу с базой данных по умолчанию postgres
+    // подключаемся к серверу с базой
+    // данных по умолчанию postgres
     db.setDatabaseName("postgres");
 
     if (!db.open()) {
@@ -164,7 +165,6 @@ void DBManager::CreateTable(const QString &tableName)
 
     if (query.exec(createTableQuery)) {
         qDebug() << "Таблица" << tableName << "создана.";
-
     }
     else {
         qDebug() << "Ошибка создания таблицы: " << tableName << query.lastError().text();
